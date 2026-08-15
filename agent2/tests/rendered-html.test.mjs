@@ -93,6 +93,14 @@ test("summary view provides a clear patient-switch action", async () => {
   assert.match(app, /setPatientName\(""\)/);
 });
 
+test("summary layout contains long evidence identifiers without horizontal overflow", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.priority-card\s*\{[^}]*display:\s*grid/s);
+  assert.match(css, /\.priority-card\s*>\s*\.evidence-chips\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/s);
+  assert.match(css, /\.evidence-chips\s*\{[^}]*flex-wrap:\s*wrap/s);
+  assert.match(css, /\.summary-view\s*\{[^}]*overflow-x:\s*hidden/s);
+});
+
 test("an arbitrary name is not silently paired with the reference demo", async () => {
   const response = await callApi({ patient_name: "測試病患" });
   const payload = await response.json();
