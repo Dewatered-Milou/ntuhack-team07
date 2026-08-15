@@ -11,6 +11,29 @@ ntuhack-team07-ver2/
 └── agent2/            # Clinician-side time-series summary panel
 ```
 
+## Prerequisites
+
+- Node.js `>=22.13.0` (agent2 engine requirement) and npm
+- An OpenAI API key (or Anthropic key for Agent 1 alternate provider)
+
+### Agent 1 (`agent1/`)
+
+Express server + Vite/React 19 patient UI.
+
+- Runtime: `express`, `dotenv`, `openai`, `@anthropic-ai/sdk`
+- UI: `react`, `react-dom`, `@radix-ui/*`, `tailwind-merge`, `tw-animate-css`, `lucide-react`, `@fontsource/montserrat`
+- Build/dev: `vite`, `@vitejs/plugin-react`, `@tailwindcss/vite`, `tailwindcss`, `typescript`
+
+### Agent 2 (`agent2/`)
+
+Vinext (Vite + RSC) clinician panel deployed on Cloudflare Workers.
+
+- Runtime: `react`, `react-dom`, `@fontsource/montserrat`
+- Build/dev: `vinext`, `vite`, `@vitejs/plugin-react`, `@vitejs/plugin-rsc`, `@cloudflare/vite-plugin`, `wrangler`, `tailwindcss`, `@tailwindcss/postcss`, `typescript`
+- Lint: `eslint`, `typescript-eslint`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-plugin-jsx-a11y`, `@next/eslint-plugin-next`
+
+Install both with `npm install` inside each directory (see [Run locally](#run-locally)).
+
 ## Modes
 
 - Agent 1 assistant mode: `lifestyle` or `nutrition`, selected from the new UI.
