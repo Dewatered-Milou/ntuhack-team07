@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: #f6f8f7;
+  --color-card: #ffffff;
+  --color-card-foreground: #141a17;
+  --color-foreground: #141a17;
+  --color-border: #dfe7e2;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #141a17;
+  --color-muted: #f1f5f2;
+  --color-muted-foreground: #5f6d68;
+  --color-accent: #e3f8e9;
+  --color-accent-foreground: #0d7a34;
+  --color-ring: #15a94a;
+}
+
+:root {
+  --radius: 0.65rem;
+}
