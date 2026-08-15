@@ -1,7 +1,23 @@
 /* CareLoop demo 前端：分頁切換、病人端聊天、每日回報、醫師端摘要 */
 
 const $ = (sel) => document.querySelector(sel);
-const state = { patientId: null, patients: [], history: [] };
+const state = { patientId: null, patients: [], history: [], assistantMode: "lifestyle" };
+
+// 引擎小字用的簡短顯示名稱；沒對到的話就把 model id 轉大寫當備援，不會顯示空白。
+const MODEL_SHORT_NAME = { "gpt-5-mini": "GPT MINI", "gpt-5": "GPT 5", "claude-opus-5": "CLAUDE OPUS" };
+const shortModelName = (id) => MODEL_SHORT_NAME[id] || (id || "").toUpperCase();
+
+// 兩種對話人格——切換的是系統提示詞，不是底層 LLM 供應商（供應商顯示在選單下方的小字）。
+const ASSISTANT_MODES = {
+  lifestyle: {
+    label: "生活追蹤模式",
+    greeting: (p) => `${p.nickname}你好，我是你的照護助理。${p.phase === "treatment" ? "療程期間" : "手術後"}有任何不舒服或想問的，隨時跟我說；我的回答都會依據你的病歷和醫院的衛教資料。`,
+  },
+  nutrition: {
+    label: "營養諮詢模式",
+    greeting: (p) => `${p.nickname}您好，我是您的營養與生活教練，可以陪您聊聊體重、飲食、運動、睡眠、注射或副作用；如果身體有不舒服，也可以直接跟我說，我會視情況判斷需不需要盡快就醫。`,
+  },
+};
 
 const SUGGESTIONS = {
   p1: ["我什麼時候可以恢復吃可化凝？", "傷口有點紅腫正常嗎？", "我可以開始做哪些復健運動？"],
@@ -31,31 +47,35 @@ async function init() {
       document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
       btn.classList.add("active");
       $("#panel-" + btn.dataset.panel).classList.add("active");
-      if (btn.dataset.panel === "doctor") loadDoctor();
       if (btn.dataset.panel === "report") loadTimeline();
     });
   });
 
   $("#chat-form").addEventListener("submit", onChatSubmit);
   $("#report-form").addEventListener("submit", onReportSubmit);
-  $("#export-btn").addEventListener("click", onExport);
 }
 
 function switchPatient(id) {
   state.patientId = id;
+  renderChatIntro();
+  loadTimeline();
+}
+
+// 換病人、換對話模式都要重置聊天紀錄（系統提示詞整個不一樣，不能把舊模式的對話歷史帶進新模式）
+// 並換上對應人格的開場白；建議提問只在生活追蹤模式顯示，避免術後衛教快速提問出現在營養教練的語境下。
+function renderChatIntro() {
   state.history = [];
-  const p = state.patients.find((x) => x.id === id);
+  const p = state.patients.find((x) => x.id === state.patientId);
+  const mode = ASSISTANT_MODES[state.assistantMode];
+  $("#mode-dot").classList.toggle("nutrition", state.assistantMode === "nutrition");
   $("#chat-title").textContent = `照護問答 — ${p.nickname}（${p.surgery.name}）`;
   $("#chat-log").innerHTML = "";
-  addBubble("ai", `${p.nickname}你好，我是你的照護助理。${p.phase === "treatment" ? "療程期間" : "手術後"}有任何不舒服或想問的，隨時跟我說；我的回答都會依據你的病歷和醫院的衛教資料。`, []);
-  $("#chat-suggestions").innerHTML = (SUGGESTIONS[id] || [])
-    .map((q) => `<button type="button">${q}</button>`)
-    .join("");
+  addBubble("ai", mode.greeting(p), []);
+  const suggestions = state.assistantMode === "lifestyle" ? SUGGESTIONS[p.id] || [] : [];
+  $("#chat-suggestions").innerHTML = suggestions.map((q) => `<button type="button">${q}</button>`).join("");
   $("#chat-suggestions").querySelectorAll("button").forEach((b) =>
     b.addEventListener("click", () => { $("#chat-input").value = b.textContent; onChatSubmit(new Event("submit")); })
   );
-  loadTimeline();
-  if ($("#panel-doctor").classList.contains("active")) loadDoctor();
 }
 
 /* ---------- 病人端聊天 ---------- */
@@ -128,15 +148,16 @@ async function onChatSubmit(e) {
   input.value = "";
   addBubble("user", question);
   const thinking = document.createElement("div");
-  thinking.className = "bubble ai";
-  thinking.textContent = "…";
+  thinking.className = "bubble ai thinking";
+  thinking.innerHTML = `<span class="thinking-text">思考中</span><span class="thinking-dots"><span></span><span></span><span></span></span>`;
   $("#chat-log").appendChild(thinking);
+  $("#chat-log").scrollTop = $("#chat-log").scrollHeight;
 
   try {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ patientId: state.patientId, question, history: state.history }),
+      body: JSON.stringify({ patientId: state.patientId, question, history: state.history, assistantMode: state.assistantMode }),
     });
     const data = await res.json();
     thinking.remove();
@@ -187,137 +208,29 @@ async function loadTimeline() {
     </li>`).join("");
 }
 
-/* ---------- 醫師端摘要 ---------- */
+/* ---------- 模型模式（輸入框下方的 MODEL MODE 選單）----------
+   選單本身切的是「對話人格」（生活追蹤／營養諮詢），純前端狀態，換人格就重置聊天並換開場白。
+   底層 LLM 供應商（GPT／Claude／離線）改成選單下方的小字顯示，不再由病人端切換。 */
 
-async function loadDoctor() {
-  const [data, bundle] = await Promise.all([
-    fetch("/api/summary/" + state.patientId).then((r) => r.json()),
-    fetch("/api/export/" + state.patientId).then((r) => r.json()),
-  ]);
-  const p = data.patient;
-  $("#doctor-title").textContent = `門診前 30 秒摘要 — ${p.name}（${p.age}歲，${p.surgery.name}）`;
-  $("#doctor-sub").textContent = `${p.phase === "treatment" ? "療程開始" : "手術日"} ${p.surgery.date}｜回診 ${p.surgery.next_visit}｜共病：${p.comorbidities.join("、") || "無"}｜摘要模式：${data.mode}`;
-  $("#doctor-bullets").innerHTML = data.bullets.map((b) => `<li>${b}</li>`).join("");
-
-  const s = data.stats;
-  $("#stat-row").innerHTML = `
-    <div class="stat"><div class="v">${s.days}</div><div class="l">回報天數</div></div>
-    <div class="stat"><div class="v">${s.avgPain ?? "–"}</div><div class="l">平均疼痛</div></div>
-    <div class="stat ${s.redCount ? "alert" : ""}"><div class="v">${s.redCount}</div><div class="l">紅色警示次數</div></div>
-    <div class="stat"><div class="v">${s.yellowCount}</div><div class="l">黃色注意次數</div></div>
-    <div class="stat"><div class="v">${s.adherence ?? "–"}%</div><div class="l">服藥依從</div></div>`;
-
-  drawPainChart(data.reports);
-  $("#pain-table").innerHTML =
-    "<tr><th>日期</th><th>疼痛</th><th>體溫</th><th>分級</th></tr>" +
-    data.reports.map((r) => `<tr><td>${r.date}</td><td>${r.pain}</td><td>${r.temp}</td><td>${LEVEL_LABEL[r.flag.level]}</td></tr>`).join("");
-
-  $("#q-list").innerHTML = data.questions.length
-    ? data.questions.map((q) => `<li>${q.date}｜${q.question}</li>`).join("")
-    : `<li class="hint">（尚無）</li>`;
-
-  const consults = bundle.consultations.records;
-  $("#consult-list").innerHTML = consults.length
-    ? consults.slice().reverse().map((c) => `
-      <li>
-        <span class="date">${fmtTime(c.timestamp)}</span>｜${c.question}
-        ${c.needs_doctor_confirmation ? `<span class="chip confirm">需醫師確認</span>` : ""}
-        <details><summary class="hint">AI 當時的回答</summary><span class="hint">${c.answer}</span></details>
-      </li>`).join("")
-    : `<li class="hint">（尚無）</li>`;
-}
-
-/* ---------- 醫師端資料包匯出 ---------- */
-
-// ISO 時間戳 → 「YYYY-MM-DD HH:mm」（顯示為瀏覽器本地時間）
-function fmtTime(ts) {
-  const d = new Date(ts);
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-async function onExport() {
-  try {
-    const bundle = await (await fetch("/api/export/" + state.patientId)).json();
-    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `careloop_${state.patientId}_${bundle.generated_at.slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-    $("#export-result").textContent =
-      `已打包 ${bundle.consultations.count} 筆照護諮詢＋${bundle.daily_reports.count} 筆每日回報`;
-  } catch {
-    $("#export-result").textContent = "打包失敗，請確認伺服器是否啟動。";
-  }
-}
-
-/* 疼痛趨勢折線圖：單一序列、細線、資料點可 hover，附表格替代檢視 */
-function drawPainChart(reports) {
-  const svg = $("#pain-chart");
-  const tip = $("#chart-tip");
-  const W = 640, H = 220, L = 36, R = 16, T = 14, B = 30;
-  const n = reports.length;
-  svg.innerHTML = "";
-  if (n === 0) return;
-
-  const x = (i) => (n === 1 ? (L + W - R) / 2 : L + (i * (W - L - R)) / (n - 1));
-  const y = (v) => T + (1 - v / 10) * (H - T - B);
-  const ns = "http://www.w3.org/2000/svg";
-  const el = (tag, attrs) => {
-    const node = document.createElementNS(ns, tag);
-    for (const k in attrs) node.setAttribute(k, attrs[k]);
-    return node;
-  };
-
-  for (let v = 0; v <= 10; v += 2) {
-    svg.appendChild(el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "#e7ece8", "stroke-width": 1 }));
-    const label = el("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end", "font-size": 10, fill: "#8a938e" });
-    label.textContent = v;
-    svg.appendChild(label);
-  }
-
-  const pts = reports.map((r, i) => [x(i), y(r.pain)]);
-  svg.appendChild(el("polyline", {
-    points: pts.map((p) => p.join(",")).join(" "),
-    fill: "none", stroke: "#1e6b52", "stroke-width": 2,
-    "stroke-linejoin": "round", "stroke-linecap": "round",
-  }));
-
-  reports.forEach((r, i) => {
-    const dotColor = r.flag.level === "red" ? "#b3261e" : r.flag.level === "yellow" ? "#b45309" : "#1e6b52";
-    svg.appendChild(el("circle", { cx: pts[i][0], cy: pts[i][1], r: 4, fill: dotColor, stroke: "#ffffff", "stroke-width": 2 }));
-    const tick = el("text", { x: pts[i][0], y: H - 10, "text-anchor": "middle", "font-size": 9, fill: "#8a938e" });
-    tick.textContent = r.date.slice(5);
-    svg.appendChild(tick);
+async function initModelMode() {
+  const sel = $("#model-mode-select");
+  sel.innerHTML = Object.entries(ASSISTANT_MODES).map(([value, m]) => `<option value="${value}">${m.label}</option>`).join("");
+  sel.value = state.assistantMode;
+  sel.addEventListener("change", () => {
+    state.assistantMode = sel.value;
+    renderChatIntro();
   });
 
-  const last = reports[n - 1];
-  const lastLabel = el("text", { x: pts[n - 1][0], y: pts[n - 1][1] - 10, "text-anchor": "middle", "font-size": 11, "font-weight": 700, fill: "#1d2420" });
-  lastLabel.textContent = last.pain;
-  svg.appendChild(lastLabel);
-
-  svg.onmousemove = (evt) => {
-    const rect = svg.getBoundingClientRect();
-    const mx = ((evt.clientX - rect.left) / rect.width) * W;
-    let best = 0;
-    for (let i = 1; i < n; i++) if (Math.abs(pts[i][0] - mx) < Math.abs(pts[best][0] - mx)) best = i;
-    const r = reports[best];
-    tip.style.display = "block";
-    tip.style.left = (pts[best][0] / W) * rect.width + "px";
-    tip.style.top = (pts[best][1] / H) * rect.height + "px";
-    tip.textContent = `${r.date}｜疼痛 ${r.pain} 分｜${r.temp}°C`;
-  };
-  svg.onmouseleave = () => { tip.style.display = "none"; };
+  const engineEl = $("#model-mode-engine");
+  try {
+    const { mode, models } = await (await fetch("/api/mode")).json();
+    const label = mode === "openai" ? shortModelName(models.openai) : mode === "anthropic" ? shortModelName(models.anthropic) : "離線示範模式";
+    engineEl.textContent = label;
+  } catch {
+    engineEl.textContent = "";
+  }
 }
 
 /* ---------- 啟動 ---------- */
 
-init().then(async () => {
-  try {
-    const res = await fetch("/api/summary/" + state.patientId);
-    const { mode } = await res.json();
-    const label = { openai: "GPT API 連線中", anthropic: "Claude API 連線中", mock: "離線示範模式", "mock-fallback": "API 異常・已降級離線模式" };
-    $("#mode-badge").textContent = label[mode] || mode;
-  } catch { $("#mode-badge").textContent = "離線"; }
-});
+init().then(initModelMode);

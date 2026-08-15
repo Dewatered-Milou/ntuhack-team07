@@ -9,14 +9,12 @@
 <body>
   <header>
     <div class="logo">Care<span>Loop</span></div>
-    <span id="mode-badge">連線中…</span>
     <select id="patient-select" aria-label="切換示範病人"></select>
   </header>
 
   <nav class="tabs">
     <button data-panel="chat" class="active">病人端・照護問答</button>
     <button data-panel="report">每日回報</button>
-    <button data-panel="doctor">醫師端・門診前摘要</button>
   </nav>
 
   <main>
@@ -26,11 +24,23 @@
         <h2 id="chat-title">照護問答</h2>
         <p class="hint">回答依據你的個人病歷與醫院衛教資料，來源都會標示；涉及臨床決策時會標「需醫師確認」並轉入回診問題清單。</p>
         <div id="chat-log"></div>
-        <form id="chat-form">
-          <input id="chat-input" type="text" placeholder="輸入你的問題…" autocomplete="off" />
-          <button class="primary" type="submit">送出</button>
-        </form>
-        <div class="suggestions" id="chat-suggestions"></div>
+        <div class="composer">
+          <form id="chat-form">
+            <input id="chat-input" type="text" placeholder="輸入你的問題…" autocomplete="off" />
+            <button class="primary" type="submit">送出</button>
+          </form>
+          <div class="composer-tools">
+            <div class="model-mode">
+              <div class="model-mode-row">
+                <span id="mode-dot" class="mode-dot" aria-hidden="true"></span>
+                <label for="model-mode-select">MODEL MODE</label>
+                <select id="model-mode-select" aria-label="切換對話模式"></select>
+              </div>
+              <span id="model-mode-engine" class="model-mode-engine"></span>
+            </div>
+            <div class="suggestions" id="chat-suggestions"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -58,7 +68,7 @@
               </select>
             </div>
           </div>
-          <p style="margin-bottom:0.2rem"><label style="font-size:0.85rem;color:var(--muted)">傷口狀況（可複選）</label></p>
+          <label class="section-label">傷口狀況（可複選）</label>
           <div class="checks" id="f-wound">
             <label><input type="checkbox" value="紅腫" /> 紅腫</label>
             <label><input type="checkbox" value="滲液" /> 滲液</label>
@@ -69,49 +79,15 @@
           <p class="checks" style="margin-top:0.6rem">
             <label><input type="checkbox" id="f-meds" checked /> 今天有按時服藥</label>
           </p>
-          <button class="primary" type="submit" style="margin-top:0.4rem">送出回報</button>
-          <span id="report-result" style="margin-left:0.8rem"></span>
+          <div class="form-actions">
+            <button class="primary" type="submit">送出回報</button>
+            <span id="report-result"></span>
+          </div>
         </form>
       </div>
       <div class="card">
         <h2>回報時間軸</h2>
         <ul class="timeline" id="timeline"></ul>
-      </div>
-    </section>
-
-    <!-- 醫師端 -->
-    <section id="panel-doctor" class="panel">
-      <div class="card">
-        <h2 id="doctor-title">門診前 30 秒摘要</h2>
-        <p class="hint" id="doctor-sub"></p>
-        <ul id="doctor-bullets"></ul>
-      </div>
-      <div class="stat-row" id="stat-row"></div>
-      <div class="card">
-        <h2>疼痛趨勢（0–10 分）</h2>
-        <div class="chart-wrap">
-          <svg id="pain-chart" viewBox="0 0 640 220" role="img" aria-label="疼痛分數逐日折線圖"></svg>
-          <div id="chart-tip"></div>
-        </div>
-        <details>
-          <summary class="hint">以表格檢視資料</summary>
-          <table class="data" id="pain-table"></table>
-        </details>
-      </div>
-      <div class="card">
-        <h2>病人累積的待答問題</h2>
-        <ul class="q-list" id="q-list"><li class="hint">（尚無）</li></ul>
-      </div>
-      <div class="card">
-        <h2>照護諮詢紀錄（含時間點）</h2>
-        <p class="hint">病人與 AI 助理的每一次問答都留有時間戳記，回診前可完整回顧。</p>
-        <ul class="q-list" id="consult-list"><li class="hint">（尚無）</li></ul>
-      </div>
-      <div class="card">
-        <h2>提供資料給醫師端系統</h2>
-        <p class="hint">打包這位病人的照護諮詢（含時間點）與每日回報歷史為結構化 JSON，供醫院系統調閱分析。也可由系統直接呼叫 <code>GET /api/export/:patientId</code>（支援 <code>?from=&amp;to=</code> 日期區間）。</p>
-        <button class="primary" type="button" id="export-btn">⬇ 下載資料包（JSON）</button>
-        <span id="export-result" class="hint" style="margin-left:0.8rem"></span>
       </div>
     </section>
   </main>

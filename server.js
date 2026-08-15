@@ -93,23 +93,27 @@ app.get("/api/patient/:id", (req, res) => {
 });
 
 // 病人端聊天：載入個人病歷＋衛教資料，回答附引用與「需醫師確認」標註
+// assistantMode：生活追蹤模式（"lifestyle"，預設）／營養諮詢模式（"nutrition"）——切換的是系統提示詞人格，
+// 不是 LLM 供應商；供應商仍由 lib/llm.js 的 currentProvider 決定。
 app.post("/api/chat", async (req, res) => {
-  const { patientId, question, history } = req.body || {};
+  const { patientId, question, history, assistantMode } = req.body || {};
   const patient = getPatient(patientId);
   if (!patient || !question) return res.status(400).json({ error: "patientId and question required" });
   try {
-    const result = await llm.answerQuestion({ patient, education, question, history });
+    const result = await llm.answerQuestion({ patient, education, question, history, assistantMode });
     const now = new Date().toISOString();
-    // 每一次諮詢問答都留下時間點與完整內容，納入醫師端資料包
-    consultations[patientId].push({
-      timestamp: now,
-      question,
-      answer: result.answer,
-      citations: result.citations || [],
-      needs_doctor_confirmation: result.needs_doctor_confirmation,
-      triage_level: result.triage_level,
-      consult_level: result.consult_level,
-    });
+    // 每一次諮詢問答都留下時間點與完整內容，納入醫師端資料包——營養諮詢模式不用打包對話資料
+    if (assistantMode !== "nutrition") {
+      consultations[patientId].push({
+        timestamp: now,
+        question,
+        answer: result.answer,
+        citations: result.citations || [],
+        needs_doctor_confirmation: result.needs_doctor_confirmation,
+        triage_level: result.triage_level,
+        consult_level: result.consult_level,
+      });
+    }
     if (result.needs_doctor_confirmation) {
       (pendingQuestions[patientId] = pendingQuestions[patientId] || []).push({
         date: now.slice(0, 10),
@@ -221,6 +225,21 @@ app.get("/api/export/:patientId", (req, res) => {
     },
     pending_questions: questionList,
   });
+});
+
+// 模型模式：讀取／切換目前使用的 LLM 供應商（GPT API／Claude API／離線示範模式）。
+// 給前端輸入框下方的「MODEL MODE」下拉選單用，方便 Demo 現場臨時切換，不需重啟伺服器。
+app.get("/api/mode", (_req, res) => {
+  res.json(llm.getStatus());
+});
+
+app.post("/api/mode", (req, res) => {
+  const { mode } = req.body || {};
+  try {
+    res.json(llm.setProvider(mode));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
