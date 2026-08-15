@@ -1,0 +1,145 @@
+[
+  {
+    "id": "p1",
+    "name": "王秀蘭",
+    "nickname": "王阿姨",
+    "age": 68,
+    "sex": "女",
+    "phase": "post_op",
+    "surgery": {
+      "name": "右側全人工膝關節置換術（TKA）",
+      "date": "2026-08-06",
+      "surgeon": "骨科 林醫師",
+      "next_visit": "2026-08-22"
+    },
+    "comorbidities": ["第2型糖尿病", "高血壓", "心房顫動"],
+    "medications": [
+      { "name": "Metformin（每日兩次）", "note": "血糖藥，隨餐服用" },
+      { "name": "Warfarin 可化凝（每日一次）", "note": "抗凝血劑——術前已停藥 5 天，恢復服用時間需由醫師確認" },
+      { "name": "Amlodipine（每日一次）", "note": "血壓藥" },
+      { "name": "Celecoxib（需要時）", "note": "術後止痛藥" }
+    ],
+    "allergies": ["Penicillin（皮疹）"],
+    "labs": [
+      { "name": "HbA1c", "value": "7.8%", "date": "2026-07-28" },
+      { "name": "INR", "value": "2.5", "date": "2026-07-28" },
+      { "name": "eGFR", "value": "65", "date": "2026-07-28" }
+    ],
+    "care_plan": "術後 90 天照護包：每日症狀回報、傷口照護衛教、復健運動提醒；回診前自動整理摘要給林醫師。"
+  },
+  {
+    "id": "p2",
+    "name": "陳柏睿",
+    "nickname": "柏睿",
+    "age": 22,
+    "sex": "男",
+    "phase": "post_op",
+    "surgery": {
+      "name": "左下智齒（阻生齒）拔除術",
+      "date": "2026-08-13",
+      "surgeon": "口腔外科 張醫師",
+      "next_visit": "2026-08-20"
+    },
+    "comorbidities": [],
+    "medications": [
+      { "name": "Amoxicillin（每日三次，共 3 天）", "note": "預防性抗生素——需服用完整療程" },
+      { "name": "Ibuprofen（需要時）", "note": "止痛藥，隨餐服用" }
+    ],
+    "allergies": [],
+    "labs": [],
+    "care_plan": "拔牙術後 7 天照護包：出血與腫脹追蹤、乾性齒槽炎警示、飲食衛教；回診前整理摘要給張醫師。"
+  },
+  {
+    "id": "p3",
+    "name": "林金福",
+    "nickname": "林伯伯",
+    "age": 74,
+    "sex": "男",
+    "phase": "post_op",
+    "surgery": {
+      "name": "冠狀動脈繞道手術（CABG，LIMA + SVG 共 6 條吻合）",
+      "date": "2026-08-05",
+      "surgeon": "心臟外科 紀醫師",
+      "next_visit": "2026-08-28"
+    },
+    "comorbidities": [
+      "心臟衰竭（HFrEF，EF 約 36%，NYHA III）",
+      "冠狀動脈疾病（左主幹＋三條血管病變，SYNTAX 43.5）",
+      "高血壓",
+      "慢性腎臟病第 3b 期",
+      "第2型糖尿病",
+      "血脂異常",
+      "喉癌（2021 年經口雷射顯微手術，已治癒）"
+    ],
+    "medications": [
+      { "name": "Ivabradine（每日兩次）", "note": "心臟衰竭用藥，控制心率" },
+      { "name": "Bisoprolol（每日一次）", "note": "乙型阻斷劑，控制心率與血壓" },
+      { "name": "Captopril（每日三次）", "note": "血壓藥（ACEI）——腎功能不佳，需定期追蹤腎功能與血鉀" },
+      { "name": "Pitavastatin（每晚一次）", "note": "降血脂藥" },
+      { "name": "Dapagliflozin（暫停中）", "note": "血糖藥（SGLT2 抑制劑）——手術前後暫停，恢復服用時間需由醫師確認" },
+      { "name": "Acetaminophen（需要時）", "note": "止痛藥——腎功能不佳，勿自行使用 NSAID 類止痛藥（如 Ibuprofen）" }
+    ],
+    "allergies": [],
+    "labs": [
+      { "name": "LVEF（心臟超音波）", "value": "36.1%", "date": "2026-06-24" },
+      { "name": "NT-proBNP", "value": "13400 pg/mL", "date": "2026-06-24" },
+      { "name": "Creatinine", "value": "2.65 mg/dL", "date": "2026-08-04" },
+      { "name": "血鉀（K）", "value": "5.2 mmol/L", "date": "2026-08-04" },
+      { "name": "Hb", "value": "10.9 g/dL", "date": "2026-08-04" }
+    ],
+    "notes": "抽菸 40 年（每日 1 包），已戒 4 年。父親有中風病史。術後恢復：當天拔管、第 3 天轉普通病房、第 7 天可攙扶行走 30 公尺、第 9 天（8/14）出院返家。個案改編自台大醫院病房案例討論（已去識別化，日期平移一年以配合 Demo 時間軸）。",
+    "care_plan": "CABG 術後 90 天照護包：每日症狀＋體重回報（監測心衰竭水腫）、胸骨保護衛教（避免提重物與單手撐起）、胸骨與腿部取靜脈傷口照護；回診前自動整理摘要給紀醫師。"
+  },
+  {
+    "id": "p4",
+    "name": "洪玉梅",
+    "nickname": "洪奶奶",
+    "age": 70,
+    "sex": "女",
+    "phase": "post_op",
+    "surgery": {
+      "name": "心導管冠狀動脈支架置放術（PCI，塗藥支架，經橈動脈）",
+      "date": "2026-08-11",
+      "surgeon": "心臟內科 陳醫師",
+      "next_visit": "2026-08-25"
+    },
+    "comorbidities": ["冠狀動脈疾病（單條血管病變）", "高血壓", "血脂異常"],
+    "medications": [
+      { "name": "Aspirin（每日一次）", "note": "抗血小板藥——支架術後絕不可自行停藥" },
+      { "name": "Clopidogrel（每日一次）", "note": "抗血小板藥（雙抗之一）——需連續服用，漏服或停藥有支架內血栓風險" },
+      { "name": "Rosuvastatin（每晚一次）", "note": "降血脂藥" },
+      { "name": "Valsartan（每日一次）", "note": "血壓藥" }
+    ],
+    "allergies": [],
+    "labs": [
+      { "name": "LDL-C", "value": "118 mg/dL", "date": "2026-08-04" },
+      { "name": "eGFR", "value": "72", "date": "2026-08-04" }
+    ],
+    "care_plan": "PCI 術後 30 天照護包：穿刺部位（右手腕）追蹤、雙重抗血小板藥（DAPT）服藥提醒與依從性追蹤、胸痛警示衛教；回診前整理摘要給陳醫師。"
+  },
+  {
+    "id": "p5",
+    "name": "李承翰",
+    "nickname": "承翰",
+    "age": 35,
+    "sex": "男",
+    "phase": "post_op",
+    "surgery": {
+      "name": "腹腔鏡闌尾切除術（急性闌尾炎）",
+      "date": "2026-08-10",
+      "surgeon": "一般外科 周醫師",
+      "next_visit": "2026-08-17"
+    },
+    "comorbidities": [],
+    "medications": [
+      { "name": "Cephalexin（每日四次，共 5 天）", "note": "抗生素——需服用完整療程" },
+      { "name": "Acetaminophen（需要時）", "note": "止痛藥" }
+    ],
+    "allergies": [],
+    "labs": [
+      { "name": "WBC（術前）", "value": "14.2 k/µL", "date": "2026-08-10" },
+      { "name": "CRP（術前）", "value": "8.6 mg/dL", "date": "2026-08-10" }
+    ],
+    "care_plan": "闌尾切除術後 14 天照護包：傷口感染追蹤（術前已有腹內感染，屬感染高風險）、飲食恢復衛教、發燒警示；回診前整理摘要給周醫師。"
+  }
+]

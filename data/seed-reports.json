@@ -1,0 +1,32 @@
+{
+  "p1": [
+    { "date": "2026-08-07", "pain": 7, "temp": 37.2, "wound": ["紅腫"], "meds_taken": true, "mood": "普通", "note": "剛出院，膝蓋很腫" },
+    { "date": "2026-08-08", "pain": 6, "temp": 37.0, "wound": ["紅腫"], "meds_taken": true, "mood": "普通", "note": "" },
+    { "date": "2026-08-09", "pain": 6, "temp": 37.6, "wound": ["紅腫"], "meds_taken": true, "mood": "不太好", "note": "晚上覺得熱熱的" },
+    { "date": "2026-08-10", "pain": 5, "temp": 37.1, "wound": [], "meds_taken": true, "mood": "普通", "note": "" },
+    { "date": "2026-08-11", "pain": 4, "temp": 36.8, "wound": [], "meds_taken": false, "mood": "普通", "note": "早上忘記吃血糖藥" },
+    { "date": "2026-08-12", "pain": 4, "temp": 36.9, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "可以走到巷口了" },
+    { "date": "2026-08-13", "pain": 3, "temp": 36.7, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "復健彎到 90 度" },
+    { "date": "2026-08-14", "pain": 3, "temp": 36.8, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "" }
+  ],
+  "p2": [
+    { "date": "2026-08-14", "pain": 5, "temp": 36.9, "wound": ["輕微滲血"], "meds_taken": true, "mood": "普通", "note": "臉頰腫起來" }
+  ],
+  "p3": [
+    { "date": "2026-08-14", "pain": 4, "temp": 36.8, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "今天出院回家，胸口傷口有點緊繃" },
+    { "date": "2026-08-15", "pain": 4, "temp": 37.0, "wound": [], "meds_taken": true, "mood": "普通", "note": "早上量體重比昨天重 1 公斤，走到廁所會有點喘，腿上拿血管的傷口也腫腫的" }
+  ],
+  "p4": [
+    { "date": "2026-08-12", "pain": 2, "temp": 36.7, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "手腕有一塊瘀青，壓著不痛" },
+    { "date": "2026-08-13", "pain": 1, "temp": 36.6, "wound": [], "meds_taken": false, "mood": "普通", "note": "早上出門拜拜，忘記帶藥，抗血小板藥漏吃一次" },
+    { "date": "2026-08-14", "pain": 1, "temp": 36.7, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "瘀青變淡了" },
+    { "date": "2026-08-15", "pain": 1, "temp": 36.6, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "" }
+  ],
+  "p5": [
+    { "date": "2026-08-11", "pain": 5, "temp": 37.1, "wound": ["紅腫"], "meds_taken": true, "mood": "普通", "note": "肚臍旁的傷口有點紅" },
+    { "date": "2026-08-12", "pain": 5, "temp": 37.4, "wound": ["紅腫"], "meds_taken": true, "mood": "普通", "note": "" },
+    { "date": "2026-08-13", "pain": 6, "temp": 37.7, "wound": ["紅腫"], "meds_taken": true, "mood": "不太好", "note": "覺得傷口越來越痛" },
+    { "date": "2026-08-14", "pain": 7, "temp": 38.0, "wound": ["紅腫"], "meds_taken": false, "mood": "不太好", "note": "沒什麼食慾，抗生素忘記吃兩次" },
+    { "date": "2026-08-15", "pain": 7, "temp": 38.2, "wound": ["紅腫", "滲液"], "meds_taken": true, "mood": "很差", "note": "傷口流出黃黃的液體，整個人很累" }
+  ]
+}

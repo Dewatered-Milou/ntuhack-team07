@@ -1,0 +1,15 @@
+{
+  "_comment": "紅旗分級規則表——由醫學生A審核修訂。level: red > yellow > green。op: gte(數值≥)、includes(陣列或字串包含)、eq(等於)。命中多條時取最高等級。",
+  "rules": [
+    { "id": "R1", "field": "temp", "op": "gte", "value": 38, "level": "red", "message": "體溫 ≥ 38°C，可能為感染徵象，建議盡快聯絡醫療團隊" },
+    { "id": "R2", "field": "pain", "op": "gte", "value": 8, "level": "red", "message": "疼痛 ≥ 8 分，超出預期恢復範圍" },
+    { "id": "R3", "field": "wound", "op": "includes", "value": "滲液", "level": "red", "message": "傷口滲液，可能為感染徵象" },
+    { "id": "R4", "field": "wound", "op": "includes", "value": "裂開", "level": "red", "message": "傷口裂開，需盡快回診處理" },
+    { "id": "R5", "field": "wound", "op": "includes", "value": "大量出血", "level": "red", "message": "大量出血，請立即就醫" },
+    { "id": "Y1", "field": "temp", "op": "gte", "value": 37.5, "level": "yellow", "message": "體溫偏高（≥ 37.5°C），請持續觀察並回報" },
+    { "id": "Y2", "field": "pain", "op": "gte", "value": 6, "level": "yellow", "message": "疼痛 ≥ 6 分，建議留意變化趨勢" },
+    { "id": "Y3", "field": "wound", "op": "includes", "value": "紅腫", "level": "yellow", "message": "傷口紅腫，若持續加劇建議提前回診" },
+    { "id": "Y4", "field": "meds_taken", "op": "eq", "value": false, "level": "yellow", "message": "今日未按時服藥" },
+    { "id": "Y5", "field": "mood", "op": "eq", "value": "很差", "level": "yellow", "message": "情緒狀態不佳，關懷追蹤" }
+  ]
+}
