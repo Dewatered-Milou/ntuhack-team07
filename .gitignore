@@ -1,2 +1,13 @@
 node_modules/
 .env
+.env.local
+.env.*.local
+coverage/
+.next/
+.vinext/
+dist/
+.wrangler/
+out/
+.DS_Store
+*.pem
+*.log

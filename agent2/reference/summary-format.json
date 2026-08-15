@@ -1,0 +1,57 @@
+{
+  "format_version": "summary-1.0",
+  "generated_at": "2026-08-15T06:30:00.000Z",
+  "language": "zh-TW",
+  "status": "complete",
+  "time_range": {
+    "start": "2026-08-14T10:00:00.000Z",
+    "end": "2026-08-15T06:12:00.000Z"
+  },
+  "summary": {
+    "text": "將時序對話濃縮成一段可快速閱讀的摘要。",
+    "evidence_event_ids": [
+      "evt_001",
+      "evt_002"
+    ]
+  },
+  "key_points": [
+    {
+      "text": "只保留輸入中明確出現的重要資訊。",
+      "evidence_event_ids": [
+        "evt_001"
+      ]
+    }
+  ],
+  "recent_changes": [
+    {
+      "text": "描述症狀、數值、用藥或患者狀態隨時間的變化。",
+      "evidence_event_ids": [
+        "evt_002"
+      ]
+    }
+  ],
+  "patient_questions": [
+    {
+      "text": "保留患者明確提出、待醫療人員回應的問題。",
+      "evidence_event_ids": [
+        "evt_002"
+      ]
+    }
+  ],
+  "attention": {
+    "level": "review",
+    "label": "建議優先核對",
+    "text": "只描述需要注意的原始回報，不提供診斷或處置。",
+    "evidence_event_ids": [
+      "evt_002"
+    ]
+  },
+  "provenance": {
+    "source_event_ids": [
+      "evt_001",
+      "evt_002"
+    ],
+    "model": "configured-at-runtime",
+    "prompt_version": "summary-v1.0"
+  }
+}
