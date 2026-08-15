@@ -28,5 +28,13 @@
     { "date": "2026-08-13", "pain": 6, "temp": 37.7, "wound": ["紅腫"], "meds_taken": true, "mood": "不太好", "note": "覺得傷口越來越痛" },
     { "date": "2026-08-14", "pain": 7, "temp": 38.0, "wound": ["紅腫"], "meds_taken": false, "mood": "不太好", "note": "沒什麼食慾，抗生素忘記吃兩次" },
     { "date": "2026-08-15", "pain": 7, "temp": 38.2, "wound": ["紅腫", "滲液"], "meds_taken": true, "mood": "很差", "note": "傷口流出黃黃的液體，整個人很累" }
+  ],
+  "p6": [
+    { "date": "2026-08-10", "pain": 1, "temp": 36.6, "wound": [], "meds_taken": true, "mood": "普通", "note": "昨晚打了第一次 1.0 mg，今天有點噁心、吃不太下" },
+    { "date": "2026-08-11", "pain": 1, "temp": 36.7, "wound": [], "meds_taken": true, "mood": "普通", "note": "還是有點噁心，改成少量多餐好多了" },
+    { "date": "2026-08-12", "pain": 0, "temp": 36.5, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "噁心改善，肚皮注射的地方有一個小紅點，不痛" },
+    { "date": "2026-08-13", "pain": 0, "temp": 36.6, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "今天走了 8000 步，早上體重 83.4 kg" },
+    { "date": "2026-08-14", "pain": 0, "temp": 36.6, "wound": [], "meds_taken": true, "mood": "普通", "note": "跟同事聚餐吃比較多，覺得有點脹" },
+    { "date": "2026-08-15", "pain": 0, "temp": 36.5, "wound": [], "meds_taken": true, "mood": "還不錯", "note": "早上體重 83.2 kg，在家量血壓 126/80" }
   ]
 }

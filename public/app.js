@@ -9,6 +9,7 @@ const SUGGESTIONS = {
   p3: ["我的排糖藥什麼時候可以恢復吃？", "體重變重、走路會喘要注意什麼？", "胸口傷口痛可以吃止痛藥嗎？"],
   p4: ["抗血小板藥漏吃一次怎麼辦？", "手腕的瘀青正常嗎？", "多久之後可以提重物？"],
   p5: ["傷口越來越痛還流出黃黃的液體怎麼辦？", "發燒到幾度要去急診？", "抗生素忘記吃可以補吃嗎？"],
+  p6: ["打完針一直想吐正常嗎？", "這週日晚上有事沒辦法打針怎麼辦？", "體重是不是掉太慢了？"],
 };
 const LEVEL_LABEL = { green: "● 綠｜穩定", yellow: "● 黃｜注意", red: "● 紅｜警示" };
 
@@ -46,7 +47,7 @@ function switchPatient(id) {
   const p = state.patients.find((x) => x.id === id);
   $("#chat-title").textContent = `照護問答 — ${p.nickname}（${p.surgery.name}）`;
   $("#chat-log").innerHTML = "";
-  addBubble("ai", `${p.nickname}你好，我是你的照護助理。手術後有任何不舒服或想問的，隨時跟我說；我的回答都會依據你的病歷和醫院的衛教資料。`, []);
+  addBubble("ai", `${p.nickname}你好，我是你的照護助理。${p.phase === "treatment" ? "療程期間" : "手術後"}有任何不舒服或想問的，隨時跟我說；我的回答都會依據你的病歷和醫院的衛教資料。`, []);
   $("#chat-suggestions").innerHTML = (SUGGESTIONS[id] || [])
     .map((q) => `<button type="button">${q}</button>`)
     .join("");
@@ -59,24 +60,34 @@ function switchPatient(id) {
 
 /* ---------- 病人端聊天 ---------- */
 
-function addBubble(role, text, cited, needsConfirm) {
+const CONCLUSION_CHIP_LABEL = { 3: "已送醫師審閱", 4: "衛教資訊" };
+
+function addBubble(role, text, cited, needsConfirm, conclusion) {
   const div = document.createElement("div");
   div.className = "bubble " + role;
   div.textContent = text;
   if (role === "ai") {
     const badges = document.createElement("div");
     badges.className = "badges";
-    (cited || []).forEach((c) => {
+    if (cited && cited.length) {
       const chip = document.createElement("span");
       chip.className = "chip cite";
-      chip.textContent = `來源｜${c.title}`;
-      chip.title = c.source;
+      chip.textContent = "來源：" + cited.map((c) => c.title).join("、");
+      chip.title = cited.map((c) => c.source).join("\n");
       badges.appendChild(chip);
-    });
+    }
     if (needsConfirm) {
       const chip = document.createElement("span");
       chip.className = "chip confirm";
       chip.textContent = "需醫師確認・已加入回診問題清單";
+      badges.appendChild(chip);
+    }
+    // 結論 Level 3（Review）／4（衛教）：只加一顆小標籤，不另起卡片——這兩級不需要病人做任何事
+    if (conclusion && (conclusion.level === 3 || conclusion.level === 4)) {
+      const chip = document.createElement("span");
+      chip.className = "chip level-" + conclusion.level;
+      chip.textContent = CONCLUSION_CHIP_LABEL[conclusion.level];
+      chip.title = conclusion.detail + (conclusion.clinic ? `｜你的診所：${conclusion.clinic}` : "");
       badges.appendChild(chip);
     }
     if (badges.children.length) div.appendChild(badges);
@@ -85,11 +96,12 @@ function addBubble(role, text, cited, needsConfirm) {
   $("#chat-log").scrollTop = $("#chat-log").scrollHeight;
 }
 
-// 檢傷 1–4 級時顯示的緊急處置卡：級數說明＋處置建議＋一鍵撥號
-function addEmergencyCard(em) {
+// 結論 Level 1（緊急危險）／2（優先回診非緊急）才起獨立卡片：
+// Level 1 大紅卡、Level 2 中橙卡，兩者都附聯絡電話；Level 3／4 由 addBubble 的小標籤處理，不叫這支。
+function addConclusionCard(conclusion) {
   const card = document.createElement("div");
-  card.className = "emergency-card " + em.severity;
-  const contacts = em.contacts
+  card.className = "conclusion level-" + conclusion.level;
+  const contacts = conclusion.contacts
     .map(
       (c) => `
       <a class="contact" href="tel:${c.phone.replace(/-/g, "")}">
@@ -100,10 +112,10 @@ function addEmergencyCard(em) {
     )
     .join("");
   card.innerHTML = `
-    <div class="em-head">⚠ 急診檢傷第 ${em.level} 級「${em.name}」<span class="em-wait">建議處置時間：${em.wait}</span></div>
-    <div class="em-advice">${em.advice}</div>
-    ${contacts ? `<div class="em-contacts">${contacts}</div>` : ""}
-    <div class="em-src">分級依據：${em.source}</div>`;
+    <div class="cc-head">${conclusion.level === 1 ? "⚠ " : ""}${conclusion.label}</div>
+    <div class="cc-detail">${conclusion.detail}</div>
+    ${contacts ? `<div class="cc-contacts">${contacts}</div>` : ""}
+    ${conclusion.clinic ? `<div class="cc-src">你的診所：${conclusion.clinic}</div>` : ""}`;
   $("#chat-log").appendChild(card);
   $("#chat-log").scrollTop = $("#chat-log").scrollHeight;
 }
@@ -129,8 +141,8 @@ async function onChatSubmit(e) {
     const data = await res.json();
     thinking.remove();
     if (data.error) { addBubble("ai", "系統忙碌中，請再試一次。（" + data.error + "）", []); return; }
-    addBubble("ai", data.answer, data.cited, data.needs_doctor_confirmation);
-    if (data.emergency) addEmergencyCard(data.emergency);
+    addBubble("ai", data.answer, data.cited, data.needs_doctor_confirmation, data.conclusion);
+    if (data.conclusion && data.conclusion.level <= 2) addConclusionCard(data.conclusion);
     state.history.push({ role: "user", content: question });
     state.history.push({ role: "assistant", content: data.answer });
   } catch (err) {
@@ -184,7 +196,7 @@ async function loadDoctor() {
   ]);
   const p = data.patient;
   $("#doctor-title").textContent = `門診前 30 秒摘要 — ${p.name}（${p.age}歲，${p.surgery.name}）`;
-  $("#doctor-sub").textContent = `手術日 ${p.surgery.date}｜回診 ${p.surgery.next_visit}｜共病：${p.comorbidities.join("、") || "無"}｜摘要模式：${data.mode}`;
+  $("#doctor-sub").textContent = `${p.phase === "treatment" ? "療程開始" : "手術日"} ${p.surgery.date}｜回診 ${p.surgery.next_visit}｜共病：${p.comorbidities.join("、") || "無"}｜摘要模式：${data.mode}`;
   $("#doctor-bullets").innerHTML = data.bullets.map((b) => `<li>${b}</li>`).join("");
 
   const s = data.stats;

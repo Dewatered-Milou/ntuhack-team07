@@ -17,19 +17,56 @@ const redflagRules = readJSON("data/redflags.json").rules;
 const triage = readJSON("data/triage.json");
 const hospitals = readJSON("data/hospitals.json");
 
-// 檢傷級數 → 緊急處置卡（1–4 級顯示；5 級與 0 不顯示）
-function buildEmergency(level) {
-  if (!level || level < 1 || level > 4) return null;
-  const cfg = triage.levels.find((l) => l.level === level);
-  if (!cfg) return null;
+// 諮詢結論分級（consult_level 1–4）→ 對話框呈現設定。
+// 這是「這則諮詢最後該怎麼被處理」的分流，跟 triage_level（急診檢傷細節）是兩個維度：
+// Level 1–2 沿用 triage_level 的官方檢傷表 advice／等候時間／聯絡電話（較具體、可動作）；
+// Level 3（Review）／4（衛教）沒有對應的檢傷表項目，用固定文案，且不附緊急聯絡電話——
+// 這兩級本來就不要求病人做任何事，附電話號碼反而像在暗示「這也很急」。
+const pickContact = (ids) => ids.map((id) => hospitals.find((h) => h.id === id)).filter(Boolean);
+
+// 診所資訊：取代原本的官方來源引用——病人看到「該就醫」的卡片時，更需要知道要找誰、
+// 什麼時候已經有排定的回診，而不是分級依據的公文出處。
+const clinicInfo = (patient) => `${patient.surgery.surgeon}｜下次回診 ${patient.surgery.next_visit}`;
+
+function buildConclusion(consultLevel, triageLevel, patient) {
+  if (!consultLevel || consultLevel < 1 || consultLevel > 4) return null;
+
+  if (consultLevel === 1) {
+    const cfg = triage.levels.find((l) => l.level === (triageLevel === 1 ? 1 : 2));
+    return {
+      level: 1,
+      label: "緊急・請立即就醫",
+      detail: cfg ? cfg.advice : "這屬於危急狀況，請立刻撥打 119 或由家人立即送急診，不要等待或觀察。",
+      clinic: clinicInfo(patient),
+      contacts: pickContact(["ems", "er"]),
+    };
+  }
+  if (consultLevel === 2) {
+    const cfg = triage.levels.find((l) => l.level === (triageLevel === 3 || triageLevel === 4 ? triageLevel : 3));
+    return {
+      level: 2,
+      label: "建議儘速安排回診",
+      detail: cfg ? cfg.advice : "建議儘速安排門診評估，不需要叫救護車；若症狀突然加重，請改撥 119。",
+      clinic: clinicInfo(patient),
+      contacts: pickContact(["team", "er"]),
+    };
+  }
+  if (consultLevel === 3) {
+    return {
+      level: 3,
+      label: "已整理送醫師審閱",
+      detail: "這則諮詢屬於一般性問題，已整理進醫師端的照護諮詢紀錄。是否需要回診、調整用藥或僅需衛教回覆，將由醫師審閱後決定，目前不需要你採取任何行動。",
+      clinic: clinicInfo(patient),
+      contacts: [],
+    };
+  }
+  // consultLevel === 4
   return {
-    level,
-    name: cfg.name,
-    wait: cfg.wait,
-    severity: cfg.severity,
-    advice: cfg.advice,
-    source: triage.source,
-    contacts: cfg.contacts.map((id) => hospitals.find((h) => h.id === id)).filter(Boolean),
+    level: 4,
+    label: "衛教資訊・可自我照護",
+    detail: "這是一般衛教資訊，供你自我照護參考，不需要醫師介入。若狀況有變化，仍可隨時再詢問，或使用「每日回報」記錄。",
+    clinic: clinicInfo(patient),
+    contacts: [],
   };
 }
 
@@ -71,6 +108,7 @@ app.post("/api/chat", async (req, res) => {
       citations: result.citations || [],
       needs_doctor_confirmation: result.needs_doctor_confirmation,
       triage_level: result.triage_level,
+      consult_level: result.consult_level,
     });
     if (result.needs_doctor_confirmation) {
       (pendingQuestions[patientId] = pendingQuestions[patientId] || []).push({
@@ -83,7 +121,7 @@ app.post("/api/chat", async (req, res) => {
       .map((id) => education.find((e) => e.id === id))
       .filter(Boolean)
       .map(({ id, title, source }) => ({ id, title, source }));
-    res.json({ ...result, cited, emergency: buildEmergency(result.triage_level) });
+    res.json({ ...result, cited, conclusion: buildConclusion(result.consult_level, result.triage_level, patient) });
   } catch (err) {
     console.error("chat error:", err.message);
     res.status(500).json({ error: "LLM 呼叫失敗：" + err.message });

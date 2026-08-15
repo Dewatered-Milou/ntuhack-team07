@@ -82,5 +82,29 @@
     "title": "腹腔鏡手術後照護",
     "source": "一般外科衛教（示意內容）",
     "text": "腹腔鏡手術傷口小，術後 1–2 天肩膀痠痛屬灌氣造成的常見現象，多可自行緩解。飲食從流質、軟質逐步恢復，鼓勵早期下床活動預防腸沾黏與血栓。若發燒達 38 度以上、腹痛持續加劇、傷口紅腫滲液或有膿樣分泌物，可能是傷口或腹內感染徵象，應盡快回診。"
+  },
+  {
+    "id": "E15",
+    "title": "GLP-1 減重注射（Semaglutide）治療須知",
+    "source": "UpToDate: Glucagon-like peptide 1-based therapies for the treatment of type 2 diabetes mellitus；Obesity in adults: Overview of management",
+    "text": "Semaglutide 為皮下注射，固定每週同一天施打，注射部位可在腹部、大腿或上臂輪替。劑量由醫師每隔至少 4 週逐步調升（如 0.25→0.5→1.0 mg…），目的是降低腸胃不適，切勿自行調整劑量、增減頻率或與他人共用針具。體重下降需要時間：多在劑量調整穩定後才會明顯有感，1–2 週的停滯很常見，不代表無效；若在目前劑量下已持續使用 3 個月、體重改善仍有限，才需要由醫師評估是否調整療程，不是自行停藥或加量。多數人停藥後體重會逐漸回升，因此療程通常需要長期配合飲食與運動一起維持效果。"
+  },
+  {
+    "id": "E16",
+    "title": "GLP-1 藥物常見副作用與警訊",
+    "source": "UpToDate: Glucagon-like peptide 1-based therapies for the treatment of type 2 diabetes mellitus；Obesity in adults: Drug therapy",
+    "text": "常見副作用為噁心、嘔吐、腹瀉或便祕，好發於剛開始用藥或調高劑量後的 1–2 週，多數會隨時間緩解，少量多餐、避免油膩與過甜食物、放慢進食速度有幫助。出現以下警訊請立即停藥並盡速就醫：持續劇烈上腹痛（可能合併噁心、痛感傳到背部）——可能是急性胰臟炎；右上腹痛合併發燒或皮膚、眼白變黃——可能是膽囊發炎或膽結石；嚴重嘔吐腹瀉合併明顯虛弱、意識改變——可能是脫水或酮酸中毒；視力突然模糊或喪失——需立即回報醫療團隊。注射部位輕微紅點或瘀青屬常見，若紅腫擴大或化膿請回報。"
+  },
+  {
+    "id": "E17",
+    "title": "漏打一劑 GLP-1 週針怎麼辦",
+    "source": "UpToDate: Glucagon-like peptide 1-based therapies for the treatment of type 2 diabetes mellitus",
+    "text": "若忘記施打，semaglutide 皮下注射可在 5 天（120 小時）內盡快補打，之後回到原本的注射日；若已超過 5 天，直接跳過這一劑，於下次原訂時間施打即可，切勿一次注射兩劑（其他 GLP-1 藥物如 tirzepatide 補打期限則是 4 天，實際以醫師處方藥物的說明為準）。若連續漏打 3 劑以上，恢復注射時是否要從較低劑量重新開始，須由醫師評估，不可以自己接續原本的劑量，請主動聯絡醫療團隊安排回診或調整。"
+  },
+  {
+    "id": "E18",
+    "title": "GLP-1 用藥與麻醉／內視鏡等醫療處置前注意事項",
+    "source": "UpToDate: Obesity in adults: Drug therapy",
+    "text": "GLP-1 類藥物（如 Semaglutide、Tirzepatide）會延緩胃排空，若近期需要接受全身麻醉手術、無痛內視鏡（胃鏡、大腸鏡）等處置，可能增加麻醉或鎮靜時嘔吐物嗆入肺部（吸入性肺炎）的風險。安排任何手術或需要麻醉、鎮靜的檢查前，請務必主動告知醫療團隊你正在使用此類藥物，是否需要暫停用藥、暫停多久，須由醫師評估決定，切勿自行停藥或照常使用。"
   }
 ]

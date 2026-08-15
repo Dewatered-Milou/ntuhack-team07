@@ -61,10 +61,19 @@ h2 { font-size: 1.05rem; margin: 0 0 0.6rem; }
 .bubble { max-width: 78%; padding: 0.6rem 0.9rem; border-radius: 14px; white-space: pre-wrap; }
 .bubble.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
 .bubble.ai { align-self: flex-start; background: var(--accent-soft); border-bottom-left-radius: 4px; }
-.bubble .badges { margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.3rem; }
-.chip { font-size: 0.72rem; border-radius: 999px; padding: 0.05rem 0.55rem; border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
-.chip.confirm { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
+/* 訊息下方的來源／狀態標示：不框起來，用細直線分隔、依語意上色，排列更輕巧 */
+.bubble .badges {
+  margin-top: 0.45rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+.chip { color: inherit; line-height: 1.5; }
+.chip:not(:last-child)::after { content: "·"; margin: 0 0.5rem; color: var(--line); }
 .chip.cite { cursor: help; }
+.chip.confirm { color: var(--warn); font-weight: 600; }
 #chat-form { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
 #chat-input { flex: 1; padding: 0.55rem 0.8rem; border: 1px solid var(--line); border-radius: 10px; font-size: 0.95rem; }
 .suggestions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
@@ -76,24 +85,23 @@ button.primary {
 }
 button.primary:disabled { opacity: 0.5; }
 
-/* ---- 緊急處置卡（檢傷 1–4 級） ---- */
-.emergency-card {
+/* ---- 諮詢結論分級對話框（consult_level 1–4）----
+   Level 1（緊急危險）：大卡片、紅色，值得佔版面，真正立即危及生命。
+   Level 2（優先回診非緊急）：中卡片、橙色，明顯但比 Level 1 安靜，附電話但不叫救護車。
+   Level 3（Review）／Level 4（衛教）：只在訊息徽章列加一顆小色塊標籤，不另起卡片——
+   這兩級本來就不要求病人做任何事，弄成卡片反而像在暗示「這也很急」。 */
+.conclusion {
   align-self: stretch;
   border-radius: 12px;
   padding: 0.8rem 1rem;
   border: 2px solid;
   background: var(--surface);
 }
-.emergency-card.red { border-color: var(--crit); background: var(--crit-soft); }
-.emergency-card.orange { border-color: #c2570f; background: #fdeee0; }
-.emergency-card.yellow { border-color: var(--warn); background: var(--warn-soft); }
-.em-head { font-weight: 800; }
-.emergency-card.red .em-head { color: var(--crit); }
-.emergency-card.orange .em-head { color: #9a4508; }
-.emergency-card.yellow .em-head { color: var(--warn); }
-.em-wait { font-weight: 400; font-size: 0.78rem; margin-left: 0.6rem; color: var(--muted); }
-.em-advice { margin: 0.3rem 0 0.5rem; }
-.em-contacts { display: grid; gap: 0.4rem; }
+.conclusion.level-1 { border-color: var(--crit); background: var(--crit-soft); }
+.conclusion.level-1 .cc-head { color: var(--crit); }
+.cc-head { font-weight: 800; }
+.cc-detail { margin: 0.3rem 0 0.5rem; }
+.cc-contacts { display: grid; gap: 0.4rem; }
 .contact {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -108,10 +116,41 @@ button.primary:disabled { opacity: 0.5; }
   color: var(--ink);
 }
 .c-phone { grid-area: phone; font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--crit); }
-.emergency-card.yellow .c-phone { color: var(--warn); }
 .c-name { grid-area: name; font-weight: 700; font-size: 0.9rem; }
 .c-note { grid-area: note; font-size: 0.75rem; color: var(--muted); }
-.em-src { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; }
+.cc-src { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; }
+
+/* Level 2：中卡片、橙色，比 Level 1 安靜——左邊細線＋電話做成小標籤，不佔滿版面 */
+.conclusion.level-2 {
+  align-self: flex-start;
+  max-width: 78%;
+  border: none;
+  border-left: 3px solid var(--warn);
+  border-radius: 0 10px 10px 0;
+  background: var(--warn-soft);
+  padding: 0.55rem 0.8rem;
+}
+.conclusion.level-2 .cc-head { font-size: 0.85rem; font-weight: 700; color: var(--warn); }
+.conclusion.level-2 .cc-detail { font-size: 0.88rem; margin: 0.25rem 0 0.45rem; }
+.conclusion.level-2 .cc-contacts { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.conclusion.level-2 .contact {
+  display: inline-flex;
+  grid-template-columns: unset;
+  grid-template-areas: unset;
+  align-items: baseline;
+  gap: 0.35rem;
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+}
+.conclusion.level-2 .c-phone { font-size: 0.82rem; font-weight: 700; color: var(--warn); }
+.conclusion.level-2 .c-name { font-size: 0.76rem; font-weight: 500; color: var(--muted); }
+.conclusion.level-2 .c-note { display: none; }
+.conclusion.level-2 .cc-src { font-size: 0.68rem; }
+
+/* Level 3／4：不起卡片，只在訊息徽章列加一段小字標示 */
+.chip.level-3 { color: var(--accent); font-weight: 600; }
+.chip.level-4 { color: var(--good); font-weight: 600; }
 
 /* ---- 回報表單與時間軸 ---- */
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.8rem 1.2rem; }
